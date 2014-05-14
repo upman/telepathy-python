@@ -18,10 +18,12 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+from __future__ import print_function
 import dbus
 import dbus.service
 import re
 import weakref
+
 
 from telepathy.constants import (CONNECTION_STATUS_DISCONNECTED,
                                  CONNECTION_STATUS_CONNECTED,
@@ -148,8 +150,8 @@ class Connection(_Connection, DBusProperties):
 
     def check_handle(self, handle_type, handle):
         if (handle_type, handle) not in self._handles:
-            print "Connection.check_handle", handle, handle_type, self._handles.keys()
-            print str(list( [ self._handles[x] for x in self._handles.keys() ] ) )
+            print("Connection.check_handle", handle, handle_type, self._handles.keys())
+            print(str(list( [ self._handles[x] for x in self._handles.keys() ] ) ))
             raise InvalidHandle('handle number %d not valid for type %d' %
                 (handle, handle_type))
 
@@ -172,7 +174,7 @@ class Connection(_Connection, DBusProperties):
         # when name and old_owner are the same, and new_owner is
         # blank, it is the client itself releasing its name... aka exiting
         if (name == old_owner and new_owner == "" and name in self._client_handles):
-            print "deleting handles for", name
+            print("deleting handles for", name)
             del self._client_handles[name]
 
     def set_self_handle(self, handle):
