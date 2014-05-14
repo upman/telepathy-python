@@ -28,7 +28,7 @@ AC_SUBST(TELEPATHY_PYTHON_MICRO_VERSION, telepathy_python_micro_version)
 AC_DEFINE(TELEPATHY_PYTHON_RELEASED, telepathy_python_released, [telepathy-python released])
 AC_SUBST(TELEPATHY_PYTHON_RELEASED, telepathy_python_released)
 
-AM_PATH_PYTHON(2.4.0)
+AM_PATH_PYTHON(3.3.0)
 
 XSLTPROC=
 AC_CHECK_PROGS([XSLTPROC], [xsltproc])

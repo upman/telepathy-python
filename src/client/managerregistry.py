@@ -22,11 +22,37 @@ Loads .manager files according to
 http://telepathy.freedesktop.org/wiki/FileFormats.
 """
 
-import ConfigParser, os
-import dircache
+from six.moves import configparser
+import os
 import dbus
 import telepathy
 
+#-----------------------------------------------------------------------
+#Code from dircache.py
+
+cache = {}
+
+def listdir(path):
+    """List directory contents, using cache."""
+    try:
+        cached_mtime, list = cache[path]
+        del cache[path]
+    except KeyError:
+        cached_mtime, list = -1, []
+    try:
+        mtime = os.stat(path)[8]
+    except os.error:
+        return []
+    if mtime != cached_mtime:
+        try:
+            list = os.listdir(path)
+        except os.error:
+            return []
+        list.sort()
+    cache[path] = mtime, list
+    return list
+
+#----------------------------------------------------------------
 
 _dbus_py_version = getattr(dbus, 'version', (0,0,0))
 
@@ -94,7 +120,7 @@ class ManagerRegistry:
 
         for path in all_paths:
             if os.path.exists(path):
-                for name in dircache.listdir(path):
+                for name in listdir(path):
                     if name.endswith('.manager'):
                         self.LoadManager(os.path.join(path, name))
 
