@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import sys
 
 import pygtk
 pygtk.require('2.0')
 
 import dbus
-import gobject
-import gtk
+from gi.repository import GObject
+from gi.repository import Gtk
 
 from account import connection_from_file
 from call import IncomingCall, OutgoingCall, get_stream_engine
@@ -15,24 +16,24 @@ from telepathy.interfaces import CONN_INTERFACE
 
 class CallWindow(gtk.Window):
     def __init__(self):
-        gtk.Window.__init__(self)
+        Gtk.Window.__init__(self)
 
-        hbox = gtk.HBox()
+        hbox = Gtk.HBox()
         hbox.set_border_width(10)
-        vbox = gtk.VBox()
+        vbox = Gtk.VBox()
 
-        output_frame = gtk.Frame()
-        output_frame.set_shadow_type(gtk.SHADOW_IN)
+        output_frame = Gtk.Frame()
+        output_frame.set_shadow_type(Gtk.SHADOW_IN)
 
-        preview_frame = gtk.Frame()
-        preview_frame.set_shadow_type(gtk.SHADOW_IN)
+        preview_frame = Gtk.Frame()
+        preview_frame.set_shadow_type(Gtk.SHADOW_IN)
 
-        self.output = gtk.Socket()
+        self.output = Gtk.Socket()
         self.output.set_size_request(400, 300)
-        self.preview = gtk.Socket()
+        self.preview = Gtk.Socket()
         self.preview.set_size_request(200, 150)
 
-        self.call_button = gtk.Button('Call')
+        self.call_button = Gtk.Button('Call')
         self.call_button.connect('clicked', self._call_button_clicked)
 
         output_frame.add(self.output)
@@ -48,15 +49,15 @@ class CallWindow(gtk.Window):
 
 class GtkLoopMixin:
     def run_main_loop(self):
-        gtk.main()
+        Gtk.main()
 
     def quit(self):
-        gtk.main_quit()
+        Gtk.main_quit()
 
 class BaseGtkCall:
     def __init__(self):
         self.window = CallWindow()
-        self.window.connect('destroy', gtk.main_quit)
+        self.window.connect('destroy', Gtk.main_quit)
         self.window.show_all()
 
     def add_preview_window(self):
@@ -85,8 +86,8 @@ class GtkOutgoingCall(GtkLoopMixin, BaseGtkCall, OutgoingCall):
             local_pending, remote_pending, actor, reason)
 
         if self.handle in added:
-            gobject.timeout_add(5000, self.add_output_window)
-            gobject.timeout_add(5000, self.add_preview_window)
+            GObject.timeout_add(5000, self.add_output_window)
+            GObject.timeout_add(5000, self.add_preview_window)
 
 class GtkIncomingCall(GtkLoopMixin, BaseGtkCall, IncomingCall):
     def __init__(self, account_file):
@@ -99,16 +100,16 @@ class GtkIncomingCall(GtkLoopMixin, BaseGtkCall, IncomingCall):
             local_pending, remote_pending, actor, reason)
 
         if self.conn[CONN_INTERFACE].GetSelfHandle() in added:
-            gobject.timeout_add(5000, self.add_output_window)
-            gobject.timeout_add(5000, self.add_preview_window)
+            GObject.timeout_add(5000, self.add_output_window)
+            GObject.timeout_add(5000, self.add_preview_window)
 
 def usage():
-    print "Usage:\n" \
+    print("Usage:\n" \
             "Outcoming call to [contact]:\n" \
             "\tpython %s [account-file] [contact]\n" \
             "Accept incoming call:\n" \
             "\tpython %s [account-file]\n" \
-            % (sys.argv[0], sys.argv[0])
+            % (sys.argv[0], sys.argv[0]))
 
 if __name__ == '__main__':
     args = sys.argv[1:]
